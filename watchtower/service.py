@@ -43,7 +43,7 @@ class Service(object):
         self.monitors[name] = {
             'monitor': monitor,
             'interval': int(interval),
-            'timeout': timeout,
+            'timeout': int(timeout),
             'args': args,
             'kwargs': kwargs
         }
@@ -95,7 +95,8 @@ class Service(object):
             except exceptions.TimeoutException:
                 return {
                     'status': status_codes.ERROR,
-                    'message': 'Monitor timed out'
+                    'message': 'Monitor timed out after {:d} seconds'.format(
+                        self.monitors[name]['timeout'])
                 }
 
         except KeyError:
