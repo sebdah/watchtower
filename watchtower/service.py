@@ -9,7 +9,7 @@ from watchtower import exceptions, status_codes
 SERVICES = []
 
 
-class Service:
+class Service(object):
     """ Definition of a Service """
     name = None
     monitors = {}
