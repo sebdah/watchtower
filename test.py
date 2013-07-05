@@ -1,8 +1,13 @@
 #!/usr/bin/env python
+import time
+
 import watchtower
 
 def check_disk(rtn, disk='/'):
-    return rtn
+    return {
+        'status': 0,
+        'message': 'All is OK'
+    }
 
 service = watchtower.Service(name='Frontend')
 service.add(
