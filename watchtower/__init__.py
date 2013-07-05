@@ -15,4 +15,4 @@ def register(service):
 def start():
     """ Start monitoring """
     for service in SERVICES:
-        print(service.execute_all())
+        service.execute_all()

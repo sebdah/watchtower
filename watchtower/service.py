@@ -1,5 +1,6 @@
 """ Service definition """
 import time
+import json
 
 from watchtower import status_codes
 
@@ -21,7 +22,7 @@ class Service:
         """
         self.name = name
 
-    def add(self, name, monitor, interval=300, args=[], kwargs={}):
+    def add(self, name, monitor, interval=300, timeout=10, args=[], kwargs={}):
         """ Add a monitor to the monitoring list
 
         :type name: str
@@ -30,6 +31,8 @@ class Service:
         :param monitor: A Python function to execute
         :type interval: int
         :param interval: How many seconds to sleep between each check
+        :type timeout: int
+        :param timeout: Timeout if the monitor havn't returned after n seconds
         :type args: list
         :param args: List of positional arguments to use
         :type kwargs: dict
@@ -39,14 +42,21 @@ class Service:
         self.monitors[name] = {
             'monitor': monitor,
             'interval': int(interval),
+            'timeout': timeout,
             'args': args,
             'kwargs': kwargs
         }
 
+        self.log('Added monitor "{monitor_name}"'.format(monitor_name=name))
         self.log(
-            'Added monitor "{monitor_name}" with interval {interval}'.format(
+            '{monitor_name} - interval: {interval}'.format(
                 monitor_name=name,
                 interval=interval),
+            level='DEBUG')
+        self.log(
+            '{monitor_name} - timeout: {timeout}'.format(
+                monitor_name=name,
+                timeout=timeout),
             level='DEBUG')
 
     def execute(self, name):
@@ -59,6 +69,10 @@ class Service:
         try:
             # Do not do anything unless the interval is right
             if int(time.time()) % self.monitors[name]['interval'] != 0:
+                self.log(
+                    '{monitor_name} not in check interval. Skipping.'.format(
+                        monitor_name=name),
+                    level='DEBUG')
                 return None
 
             return self.monitors[name]['monitor'](
@@ -82,6 +96,11 @@ class Service:
                     'status': result['status'],
                     'message': result['message']
                 }
+
+        self.log(
+            'Results: \n{results}'.format(
+                results=json.dumps(results, indent=4)),
+            level='DEBUG')
 
         return results
 
