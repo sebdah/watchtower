@@ -95,6 +95,26 @@ class TestService(service.Service):
         assert_equal(status_codes.ERROR, result['status'])
         assert_equal('Monitor timed out after 1 seconds', result['message'])
 
+    def test_remove(self):
+        """ Test the removal of a monitor from the monitoring list """
+        name = 'Disk space - /'
+
+        def check_disk(rtn, disk='/'):
+            return {
+                'status': 0,
+                'message': 'All is OK'
+            }
+
+        self.add(
+            name=name,
+            monitor=check_disk,
+            interval=1,
+            args='a')
+
+        assert_in(name, self.monitors)
+        self.remove(name)
+        assert_not_in(name, self.monitors)
+
     def test_service_name(self):
         """ Test that the service name is set properly """
         assert_equal(self.name, 'TestService')

@@ -137,3 +137,11 @@ class Service(object):
             service_name=self.name,
             level=level.upper(),
             message=message))
+
+    def remove(self, name):
+        """ Remove monitor from the monitoring list
+
+        :type name: str
+        :param name: Name of the monitor
+        """
+        self.monitors.pop(name)
