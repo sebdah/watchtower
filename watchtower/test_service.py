@@ -22,7 +22,6 @@ class TestService(service.Service):
                 'message': 'All is OK'
             }
 
-
         assert_not_in(name, self.monitors)
         self.add(
             name=name,
