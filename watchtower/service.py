@@ -1,8 +1,9 @@
 """ Service definition """
 import time
 import json
+import signal
 
-from watchtower import status_codes
+from watchtower import exceptions, status_codes
 
 
 SERVICES = []
@@ -75,9 +76,27 @@ class Service:
                     level='DEBUG')
                 return None
 
-            return self.monitors[name]['monitor'](
-                *self.monitors[name]['args'],
-                **self.monitors[name]['kwargs'])
+            def timeout_handler(signum, frame):
+                """ Timeout handler function
+
+                :type signum: int
+                :param signum: Signal number
+                :type frame: Current stack frame
+                """
+                raise exceptions.TimeoutException()
+
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(self.monitors[name]['timeout'])
+
+            try:
+                return self.monitors[name]['monitor'](
+                    *self.monitors[name]['args'],
+                    **self.monitors[name]['kwargs'])
+            except exceptions.TimeoutException:
+                return {
+                    'status': status_codes.ERROR,
+                    'message': 'Monitor timed out'
+                }
 
         except KeyError:
             return None
