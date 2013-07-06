@@ -1,0 +1,2 @@
+celery==3.0.21
+celery-with-redis==3.0
