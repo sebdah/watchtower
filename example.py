@@ -2,25 +2,18 @@
 import time
 
 import watchtower
+from watchtower.monitors import check_disk
 
-def check_disk(rtn, disk='/'):
-    return {
-        'status': 0,
-        'message': 'All is OK'
-    }
 
-service = watchtower.Service(name='Frontend')
+service = watchtower.Service(name='My Mac')
 service.add(
     name='Disk space - /',
-    monitor=check_disk,
-    interval=10,
-    args=['ok'])
-service.add(
-    name='Disk space - /vol',
-    monitor=check_disk,
-    interval=10,
-    args=['nok'],
-    kwargs={'disk': '/vol'})
+    monitor=check_disk.check_disk,
+    interval=1,
+    kwargs={
+        'path': '/',
+        'warning': 50
+    })
 
 # Register services and start Watchtower
 watchtower.register(service)

@@ -94,7 +94,7 @@ class Service(object):
                     **self.monitors[name]['kwargs'])
             except exceptions.TimeoutException:
                 return {
-                    'status': status_codes.ERROR,
+                    'status_code': status_codes.ERROR,
                     'message': 'Monitor timed out after {:d} seconds'.format(
                         self.monitors[name]['timeout'])
                 }
@@ -113,7 +113,7 @@ class Service(object):
             result = self.execute(monitor)
             if result:
                 results[monitor] = {
-                    'status': result['status'],
+                    'status_code': result['status_code'],
                     'message': result['message']
                 }
 
